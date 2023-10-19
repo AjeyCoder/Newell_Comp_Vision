@@ -7,29 +7,25 @@ export const Livecam = () => {
   const intervalRef = useRef(null);
   const [isCameraRunning, setIsCameraRunning] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [processedFrames, setProcessedFrames] = useState([]);
 
-  // Function to start the camera
   const startCamera = () => {
     if (!isCameraRunning) {
       if (videoRef.current) {
         videoRef.current.play();
       }
       setIsCameraRunning(true);
-      setIsFullScreen(false);
+      setIsFullScreen(false); // Reset fullscreen state
     }
   };
 
-  // Function to stop the camera
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       videoRef.current.pause();
       setIsCameraRunning(false);
-      setIsFullScreen(false);
+      setIsFullScreen(false); // Reset fullscreen state
     }
   };
 
-  // Function to toggle fullscreen mode
   const toggleFullScreen = () => {
     if (videoRef.current) {
       if (!isFullScreen) {
@@ -64,7 +60,6 @@ export const Livecam = () => {
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
       const context = canvas.getContext("2d");
-
       context.drawImage(
         videoRef.current,
         0,
@@ -72,50 +67,11 @@ export const Livecam = () => {
         canvas.width,
         canvas.height
       );
-      const imageDataUrl = canvas.toDataURL("image/jpeg");
-      sendDataToBackend(imageDataUrl);
-      
-
+      // const imageDataUrl = canvas.toDataURL('image/jpeg');
     }
   };
 
-  
-  const sendDataToBackend = (frames) => {
-    fetch("http://localhost:5000/susactivity",{
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON(frames),
-    })
-      .then((response) => {
-  
-        if (response.status === 201){
-          console.log("Frames sent successfully.");
-          const receivedFrames = data.frames_list; 
-          setProcessedFrames(receivedFrames);
-        } 
-        else {
-          console.error("Failed to send frames to the backend.");
-        }
-      })
-      .catch((error) =>{
-        console.error("Error sending frames:", error);
-      });
-  };
-
-  // Remove the oldest frame from the processedFrames array
-  const removeOldestFrame = () => {
-    setProcessedFrames((frames) => frames.slice(1));
-  };
-
-  // Clear the processed frames array
-  const clearProcessedFrames = () => {
-    setProcessedFrames([]);
-  };
-
   useEffect(() => {
-    // Access the camera and start capturing frames
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
@@ -127,26 +83,18 @@ export const Livecam = () => {
       .catch((error) => {
         console.error("Error accessing camera:", error);
       });
-
-    // Handle double tap for toggling fullscreen
-    let lastTap = 0;
-    videoRef.current?.addEventListener("touchend", (event) => {
-      const now = new Date().getTime();
-      if (now - lastTap <= 300) {
-        toggleFullScreen();
-      }
-      lastTap = now;
-    });
-
-    // Clear processed frames every 10 seconds (adjust as needed)
-    const clearFramesInterval = setInterval(clearProcessedFrames, 10000);
-
-    // Cleanup intervals when the component unmounts
-    return () => {
-      clearInterval(intervalRef.current);
-      clearInterval(clearFramesInterval);
-    };
   }, []);
+
+  // Detect double-tap events
+  let lastTap = 0;
+  videoRef.current?.addEventListener("touchend", (event) => {
+    const now = new Date().getTime();
+    if (now - lastTap <= 300) {
+      // Double-tap detected
+      toggleFullScreen();
+    }
+    lastTap = now;
+  });
 
   return (
     <div className="livecam-container">
@@ -182,13 +130,6 @@ export const Livecam = () => {
           onClick={toggleFullScreen}
         ></video>
       </div>
-
-      <div className="processed-frames">
-           {processedFrames.map((frame, index) => (
-           <img key={index} src={frame} alt={`Processed Frame ${index}`} />
-        ))}
-      </div>
-
     </div>
   );
 };
