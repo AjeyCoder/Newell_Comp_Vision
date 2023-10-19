@@ -1,0 +1,74 @@
+.livecam-container{
+  background-color: rgb(215, 208, 197) ;
+  margin: 0; /* Remove default margin */
+  padding: 0;
+  overflow: hidden; 
+
+}
+h1{
+    color: aliceblue;
+    font-size: xx-large;
+}
+nav {
+    position: fixed;
+    width: 90%;
+    height: min-content;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1b2430;
+    padding: 20px 80px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+  }
+
+#navbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}  
+
+#navbar li {
+    list-style: none;
+    padding: 0 20px;
+    position: relative;
+  }
+  
+#navbar li a {
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #fff;
+    transition: 0.3s ease-in-out
+}
+
+#navbar li a:hover,
+#navbar li a.active {
+  color: #17cf97;
+}
+
+#navbar li a:hover::after,
+#navbar li a.active::after {
+  content: "";
+  width: 30%;
+  height: 2px;
+  background: #cf0e0e;
+  position: absolute;
+  bottom: -4px;
+  left: 20px;
+}
+button{
+    color: #17cf97;
+}
+video{
+    width: 100%;
+    max-height: calc(100vh - 60px);
+    object-fit:fill ;
+    box-sizing: content-box;
+    margin-top: 8%;
+    box-sizing: border-box;
+}
+video:focus{
+  outline: none;
+
+}
